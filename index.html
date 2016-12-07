@@ -1,0 +1,70 @@
+<html>
+<head>
+    <title>input form</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="js/arFormService.js"></script>
+    <script src="js/validator.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+    <div class="panel">
+        <div class="title">
+            Validator test form
+        </div>
+        <div class="body">
+            <form name="testForm" id="testForm" action="post.php" method="post">
+                <div class="input-field">
+                    <input type="text" name="firstName" id="firstName" placeholder="Voornaam" autocomplete="off">
+                </div>
+                <div class="input-field">
+                    <input type="text" name="lastName" id="lastName" placeholder="Familienaam">
+                </div>
+                <div>
+                    <div class="long" class="input-field">
+                        <input class="input-long" type="text" name="street" id="street" placeholder="Straat">
+                    </div>
+                    <div class="short" class="input-field">
+                        <input class="input-short" type="text" name="houseNumber" id="houseNumber" placeholder="Nr.">
+                    </div>
+                </div>
+                <div class="input-field">
+                    <input type="text" name="email" id="email" placeholder="Email adres">
+                </div>
+                <div class="input-field">
+                    <button class="btn" type="submit" value="Verstuur" id="submitButton">Verstuur</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel">
+        <div class="title">
+            Test Validator 2
+        </div>
+        <div class="body">
+                        <form name="testForm2" id="testForm2" action="post.php" method="post">
+                <div class="input-field">
+                    <input type="text" name="firstName" id="firstName" placeholder="Voornaam" autocomplete="off">
+                </div>
+                <div class="input-field">
+                    <input type="text" name="lastName" id="lastName" placeholder="Familienaam">
+                </div>
+                <div>
+                    <div class="long" class="input-field">
+                        <input class="input-long" type="text" name="street" id="street" placeholder="Straat">
+                    </div>
+                    <div class="short" class="input-field">
+                        <input class="input-short" type="text" name="houseNumber" id="houseNumber" placeholder="Nr.">
+                    </div>
+                </div>
+                <div class="input-field">
+                    <input type="text" name="email" id="email" placeholder="Email adres">
+                </div>
+                <div class="input-field">
+                    <button class="btn" type="submit" value="Verstuur" id="submitButton2">Verstuur</button>
+                </div>
+            </form>
+        </div>
+</body>
+</html>

@@ -13,74 +13,78 @@ var arFormService = arFormService || {};
 /*
     Validator class, contains the inputs with registered validation tests
     @formID     -   Id of the form on which to validate
+    @options    - Object containing extra options
+                -   quickValidation, true to enable validation on blur event 
+                -   html5Validation, true to automatically detect and validate html5 attributes 
 */
-arFormService.validator = function(formID) {
+arFormService.validator = function(formID, options) {
 
     // Helper variables
     var _form = null;
     var _formID = "";
     var _inputs = {};
-    var _msg = {
-        default: "Er is een fout bij dit veld",
-        required: "Dit veld is verplicht",
-        numeric: "Enkel cijfers zijn toegelaten"
-    }
-    var _validations = {
-        required: function(input) {
-            if(input.value == '' || input.value == 'null')
-                return false;
-            else   
-                return true; 
-        },
-        numeric: function(input) {
-            if(isNaN(input.value))
-                return false;
-            else
-                return true;
-        }
-    };
-    var _this = this;
+    var _options = {};
 
     init(formID);
 
-    // Private methods
-    function init( formName ) {
+    /*
+        Initialization of the validator
+    */
+    function init( formName, options ) {
+        // Use ID to get form
         _form = document.getElementById(formName);
+
+        // Set the form id if it is successfully found
         if(_form) {
             _formID = formName;
-        }
-    }
 
+            //check if any options were passed
+            if(options && typeof options === "object") {
+                _options = options;
+            }
+        }
+    } // End of init
+
+    /*
+        Setup a validation rule for a certain input
+        @inputName  - the name of the input, has to be part of the form (maybe change to ID to also accept inputs outside forms)
+        @validation - the validation rule(s) to apply to the input
+                    - string: name of a predefined validation test 
+                    - object: name as property, true as value for predefined tests, callback function for custom tests
+    */
     var setValidation = function( inputName, validation ) {
         // Check inputName parameter and set input object
         if(!inputName) return console.log("Error: No input passed");
+        // Check if valid validation is passed
+        if(!validation) return console.log("Error: No Validation passed");
+
         var input = _form.elements.namedItem(inputName);
         if(!input) return console.log("Error: form element not found!");
-
-        // Check if input already has validations
+        // Check if input already has validations, create new object if not
         if(!_inputs[inputName]) {
             _inputs[inputName] = {
                 el: input,
                 tests: {}
             }
         }
-
-        // Add an event listener for the blur event to validate
-        input.addEventListener("blur", function() {
-            validateInput(_inputs[inputName]);
-        });
-
-        // Check if valid validation is passed
-        if(!validation) return console.log("Error: No Validation passed");
+        // Add an event listener for the blur event to validate if quick option is set
+        if(_options.quickValidation == true) {
+            input.addEventListener("blur", function() {
+                validateInput(_inputs[inputName]);
+            });
+        }
+        // Set the validation based on argument type string or object
         if(typeof validation === "string") {
             if(!_validations[validation]) return console.log("Error: Unknown Validation");
-            //_inputs[inputName].tests.push(_validations[validation]); Uses array for tests
             _inputs[inputName].tests[validation] = _validations[validation];
         } else if(typeof validation === "object") {
             for(var index in validation) {
+                // Ignore rule if set to false
                 if(validation[index] == false) continue;
+                // Add from library if the rule already exists
                 if(_validations[index]) {
                     _inputs[inputName].tests[index] = _validations[index];
+                // If value is a function set it as test for this rule
                 } else {
                     if(typeof validation[index] === "function") {
                         _validations[index] = validation[index];
@@ -93,8 +97,15 @@ arFormService.validator = function(formID) {
         } else {
             return console.log("Error: Validation isn't of correct type");
         }
-    }
+    } // End of setValidation
 
+    /* 
+        Add new validation rule to the library
+        @name       - name of the validation rule
+        @callback   - test for the validation rule
+        @message    - message to display for validation rule
+        **TODO : move function to prototype together with the libraries
+    */
     var addValidation = function(name, callback, message) {
         // Check parameters
         if(!(name && typeof name === "string") || (!callback && typeof callback !== "function") || (!message && typeof message !== "string")) return console.log("Error: Wrong parameters");
@@ -214,6 +225,33 @@ arFormService.validator = function(formID) {
         getFormID: function() { return _formID; }
     }
 
+}
+
+/*
+    Object to store all available tests, 
+    shared by all validator instances
+*/
+arFormService.validator.tests = {
+    /*
+        Standard predefined validation tests, same as HTML5 input attributes
+    */
+
+    // Required checks if any input is given
+    // Works for textbased inputs
+    required: function(input) {
+        if(input.value == '' || input.value == 'null')
+            return false;
+        else   
+            return true; 
+    },
+    // Numeric checks if input is a number
+    // Works for textbased inputs
+    numeric: function(input) {
+        if(isNaN(input.value))
+            return false;
+        else
+            return true;
+    }
 }
 
 /*
